@@ -51,11 +51,11 @@ python stop_simulation.py
 
 ## Example Output
 
-Request domain google dot com
+Request domain google.com
 Request IP 142.12.20.36
 Request TTL 120
 
-Response domain google dot com
+Response domain google.com
 Response IP 1.2.3.4
 Response TTL 300
 
