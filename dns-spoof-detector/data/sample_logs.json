@@ -1,0 +1,12 @@
+[
+    {
+        "Domain": "www.google.com",
+        "Local IP": "216.239.38.120",
+        "Trusted IP": "216.239.38.120",
+        "TTL": 16171,
+        "ASN": "15169",
+        "Trust Score": 100,
+        "Status": "Legitimate \u2705",
+        "timestamp": "2026-04-02 17:02:34.961044"
+    }
+]

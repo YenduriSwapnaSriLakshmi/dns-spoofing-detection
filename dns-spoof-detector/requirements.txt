@@ -1,0 +1,4 @@
+dnspython
+ipwhois
+requests
+flask

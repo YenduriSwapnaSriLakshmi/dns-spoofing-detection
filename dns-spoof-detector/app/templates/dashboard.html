@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DNS Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+
+        .box {
+            display: inline-block;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #1e293b;
+            width: 200px;
+        }
+
+        .alert {
+            background: red;
+            padding: 10px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            margin: 30px auto;
+        }
+
+        li {
+            margin: 10px;
+            padding: 10px;
+            background: #1e293b;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h1> DNS Spoofing Dashboard</h1>
+
+<div id="alertBox" class="alert" style="display:none;"></div>
+
+<div class="box">
+    <h3>Total Requests</h3>
+    <h2 id="total">{{ stats.total }}</h2>
+</div>
+
+<div class="box">
+    <h3>Legitimate</h3>
+    <h2 id="legit">{{ stats.legit }}</h2>
+</div>
+
+<div class="box">
+    <h3>Spoofed</h3>
+    <h2 id="spoofed">{{ stats.spoofed }}</h2>
+</div>
+
+<div class="chart-container">
+    <canvas id="chart"></canvas>
+</div>
+
+<h2>Recent Activity</h2>
+
+<ul id="history">
+{% for item in stats.history %}
+<li>{{ item.domain }} → {{ item.status }} (Score: {{ item.score }})</li>
+{% endfor %}
+</ul>
+
+<script>
+let chart;
+let prevLegit = {{ stats.legit }};
+let prevSpoofed = {{ stats.spoofed }};
+
+// Create chart (NO animation)
+function createChart() {
+    const ctx = document.getElementById('chart').getContext('2d');
+
+    chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Legitimate', 'Spoofed'],
+            datasets: [{
+                data: [prevLegit, prevSpoofed],
+                backgroundColor: ['green', 'red']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false   // 🚨 KEY FIX
+        }
+    });
+}
+
+// Update UI safely
+function updateUI(data) {
+
+    document.getElementById("total").innerText = data.total;
+    document.getElementById("legit").innerText = data.legit;
+    document.getElementById("spoofed").innerText = data.spoofed;
+
+    // Update chart ONLY when changed
+    if (data.legit !== prevLegit || data.spoofed !== prevSpoofed) {
+        chart.data.datasets[0].data = [data.legit, data.spoofed];
+        chart.update();
+
+        prevLegit = data.legit;
+        prevSpoofed = data.spoofed;
+    }
+
+    // Alert (stable, no blink)
+    const alertBox = document.getElementById("alertBox");
+    if (data.spoofed > 0) {
+        alertBox.style.display = "block";
+        alertBox.innerText = " ATTACK DETECTED: " + data.spoofed;
+    } else {
+        alertBox.style.display = "none";
+    }
+
+    // Update history
+    let html = "";
+    data.history.forEach(item => {
+        html += `<li>${item.domain} → ${item.status} (Score: ${item.score})</li>`;
+    });
+    document.getElementById("history").innerHTML = html;
+}
+
+// Fetch every 2 sec
+setInterval(() => {
+    fetch('/stats')
+    .then(res => res.json())
+    .then(data => updateUI(data));
+}, 2000);
+
+// Start
+createChart();
+</script>
+
+</body>
+</html>
