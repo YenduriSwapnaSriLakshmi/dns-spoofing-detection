@@ -83,11 +83,7 @@ Status spoofed
 * Deployment as a full browser security extension
 * Integration with external threat intelligence services
 
-## Screenshots
 
-```md
-![Output](screenshots/output.png)
-```
 
 ## Conclusion
 
