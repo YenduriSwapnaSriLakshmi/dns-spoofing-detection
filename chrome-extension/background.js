@@ -7,7 +7,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (!tab.url.startsWith("http")) return;
 
     try {
-        let url = new URL(tab.url);
+        let url= new URL(tab.url);
         let domain = url.hostname;
 
         // Ignore unwanted domains
