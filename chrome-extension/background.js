@@ -3,7 +3,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // Run only when page fully loaded
     if (changeInfo.status !== "complete" || !tab.url) return;
 
-    // Only http/https
+    // Only http/https  
     if (!tab.url.startsWith("http")) return;
 
     try {
